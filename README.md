@@ -8,10 +8,15 @@ This repository contains the source code of the admission test for walmart.com f
 The main goal of the project is to store map structures represented by the following information:
 
 1-Origin 	2-Destination 	3-Distance
+
 A 			B 				10
+
 C 			F  				40
+
 ...
+
 Campinas 	Barueri			90
+
 SaoPaulo	Campinas		100
 
 By analyzing the structure of the map it is possible to conclude that this is a problem based on a graph structure
@@ -23,8 +28,11 @@ choice is Neo4j embedded database and spent some time studying how they work and
 designed for relationship is better than a relation one in some aspects:
 
 1- Recent technology (I will learn during project implementation)
+
 2- Designed for relationship of data
+
 3- Contains a Djikstra algorithm implementation
+
 4- Performance is better when amount of data is increased (according to reports)
 
 My intention is to make the database operational retrieving some queries results and, after that, implement mechanisms that can improve

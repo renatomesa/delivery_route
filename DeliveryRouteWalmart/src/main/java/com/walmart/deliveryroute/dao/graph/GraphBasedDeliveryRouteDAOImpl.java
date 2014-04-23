@@ -1,126 +1,93 @@
 /**
  * 
- */
+ *//*
 package com.walmart.deliveryroute.dao.graph;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.neo4j.cypher.ExecutionEngine;
 import org.neo4j.cypher.ExecutionResult;
+import org.neo4j.graphalgo.CommonEvaluators;
+import org.neo4j.graphalgo.CostEvaluator;
+import org.neo4j.graphalgo.GraphAlgoFactory;
+import org.neo4j.graphalgo.PathFinder;
+import org.neo4j.graphalgo.WeightedPath;
+import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.RelationshipExpander;
 import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.traversal.TraversalDescription;
+import org.neo4j.kernel.Traversal;
+import org.neo4j.kernel.impl.traversal.TraversalDescriptionImpl;
 import org.neo4j.kernel.impl.util.StringLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.conversion.EndResult;
+import org.springframework.data.neo4j.conversion.Result;
 import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.walmart.deliveryroute.dao.IDeliveryRouteDAO;
+import com.walmart.deliveryroute.dao.IRouteDAO;
 import com.walmart.deliveryroute.model.MapPoint;
+import com.walmart.deliveryroute.model.ShortestPath;
 import com.walmart.deliveryroute.model.Route;
 import com.walmart.deliveryroute.repository.MapPointRepository;
 import com.walmart.deliveryroute.repository.RouteRepository;
 
-/**
+*//**
  * A database access object implementation for routes built upon a graph database system
  * @author renatomesa@gmail.com (Renato Vicari Mesa)
  *
- */
-public class GraphBasedDeliveryRouteDAOImpl implements IDeliveryRouteDAO {
+ *//*
+public class GraphBasedDeliveryRouteDAOImpl{
 
-	//@Autowired
-	GraphDatabaseService databaseService;
-	
-	private ExecutionEngine engine;
-	
-	private StringLogger stringLogger = StringLogger.logger(new File("log.txt"));
-	
-	@Autowired
-	private Neo4jTemplate template;
-	
-	@Autowired
-	private MapPointRepository mapPointRepository;
-	
-	@Autowired
-	private RouteRepository routeRepository;
 	
 	public GraphBasedDeliveryRouteDAOImpl() {
-		
-		this.databaseService = databaseService;
-		
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.walmart.deliveryroute.dao.IDeliveryRouteDAO#createDatabase(java.lang.String)
-	 */
-	@Override
-	public void createDatabase(String name) {
-		// TODO Auto-generated method stub
-		
-	}
 
-	/* (non-Javadoc)
-	 * @see com.walmart.deliveryroute.dao.IDeliveryRouteDAO#updateDatabase()
-	 */
-	@Override
-	public void updateDatabase() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see com.walmart.deliveryroute.dao.IDeliveryRouteDAO#deleteFromDatabase()
-	 */
-	@Override
-	public void deleteFromDatabase() {
-		// TODO Auto-generated method stub
-		
-	}
 	
-	/* (non-Javadoc)
-	 * @see com.walmart.deliveryroute.dao.IDeliveryRouteDAO#insertIntoDatabase()
-	 */
-	@Override
-	@Transactional
-	public void insertIntoDatabase() {
+    public ShortestPath findShortestPath( String origin, String destination )
+    {
+    	MapPoint startNode = mapPointRepository.findByPropertyValue("name", origin);
+    	MapPoint endNode = mapPointRepository.findByPropertyValue("name", destination);
+    	
+        Node start = template.getNode( startNode.getNodeId() );
+        Node end = template.getNode( endNode.getNodeId() );
+        WeightedPath path = dijkstraPathFinder.findSinglePath( start, end );
 
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see com.walmart.deliveryroute.dao.IDeliveryRouteDAO#queryDatabase()
-	 */
-	@Override
-	@Transactional
-	public void queryDatabase() {
-		// TODO Auto-generated method stub
-		//Just for testing
-		template.save(new MapPoint("A"));
-		template.save(new MapPoint("B"));
-		template.save(new MapPoint("C"));
-		template.save(new MapPoint("D"));
-		
-		 GraphRepository<MapPoint> movieRepository =
-                 template.repositoryFor(MapPoint.class);
-		 
-		 EndResult<MapPoint> points = mapPointRepository.findAll();
-				
-		 for (MapPoint mapPoint : points) {
-			System.out.println(mapPoint.getName());
+        List<MapPoint> points = new LinkedList<MapPoint>();
+        List<Route> routes = new LinkedList<Route>();
+        
+        Iterable<Node> nodes = path.nodes();
+        Iterable<Relationship> relationships = path.relationships();
+        for (Node node : nodes) {
+			MapPoint mapPoint = new MapPoint((String) node.getProperty("name"));
+			points.add(mapPoint);
 		}
-	}
+        
+        for (Relationship relationship : relationships) {
+			Route route = new Route(null, null, (Integer) relationship.getProperty("distance"), (String) relationship.getProperty("mapName")) ;
+			routes.add(route);
+		}
+        
+        ShortestPath returnPath = new ShortestPath(points, routes, path.weight());
+        
+        return returnPath;
+        
+    }
 
-	/* (non-Javadoc)
+	 (non-Javadoc)
 	 * @see com.walmart.deliveryroute.dao.IDeliveryRouteDAO#insertRouteListIntoDatabase(java.util.List)
-	 */
-	@Override
+	 
 	@Transactional
 	public void insertRouteListIntoDatabase(List<Route> routes) {
 		for (Route route : routes) {
@@ -148,4 +115,55 @@ public class GraphBasedDeliveryRouteDAOImpl implements IDeliveryRouteDAO {
 		
 	}
 
+	 (non-Javadoc)
+	 * @see com.walmart.deliveryroute.dao.IDeliveryRouteDAO#queryShortestPath(java.lang.String, java.lang.String)
+	 
+	public void queryShortestPath(String origin, String destination) {
+		//findShortestPath(origin, destination);
+		findShortestPath(origin, destination);
+		
+	}
+	
+	
+	
+    private static final String COST = "cost";
+    private static final RelationshipExpander expander;
+    private static final CostEvaluator<Double> costEvaluator;
+    private static final PathFinder<WeightedPath> dijkstraPathFinder;
+
+    public enum MyDijkstraTypes implements RelationshipType
+    {
+        GOES_TO
+    }
+    
+    static
+    {
+        // set up path finder
+        expander = Traversal.expanderForTypes(
+                Route.Type.GOES_TO, Direction.OUTGOING );
+        costEvaluator = CommonEvaluators.doubleCostEvaluator( "distance" );
+        dijkstraPathFinder = GraphAlgoFactory.dijkstra( expander, costEvaluator );
+    }
+
+    *//**
+     * Find the path.
+     *//*
+    private void runDijkstraPathFinder(String origin, String destination)
+    {
+    	
+    	MapPoint startNode = mapPointRepository.findByPropertyValue("name", origin);
+    	MapPoint endNode = mapPointRepository.findByPropertyValue("name", destination);
+    	    	
+        Node start = template.getNode( startNode.getNodeId() );
+        Node end = template.getNode( endNode.getNodeId() );
+        WeightedPath path = dijkstraPathFinder.findSinglePath( start, end );
+        for ( Node node : path.nodes() )
+        {
+        	System.out.println( node.getProperty( "name" ) );
+            
+            
+        }
+    }
+
 }
+*/

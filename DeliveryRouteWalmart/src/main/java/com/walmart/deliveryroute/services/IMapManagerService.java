@@ -3,12 +3,14 @@
  */
 package com.walmart.deliveryroute.services;
 
+import com.walmart.deliveryroute.model.ShortestPath;
+
 /**
  * Interface that defines methods regarding how a service responsible for interpretating map inputs should behave
  * @author renatomesa@gmail.com (Renato Vicari Mesa)
  *
  */
-public interface IMapInterpreterService {
+public interface IMapManagerService {
 
 	/**
 	 * Parses a {@link String} which represents a logistic map in the following form:
@@ -23,5 +25,7 @@ public interface IMapInterpreterService {
 	 * @param map text data
 	 */
 	public void performMapInterpretation(String mapName, String mapData);
+	
+	public ShortestPath getShortestPath(String origin, String destination, float autonomy, float fuelCost);
 	
 }

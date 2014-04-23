@@ -1,5 +1,6 @@
 package com.walmart.deliveryroute.model;
 
+import org.neo4j.graphdb.RelationshipType;
 import org.springframework.data.neo4j.annotation.EndNode;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
@@ -12,9 +13,22 @@ import org.springframework.data.neo4j.annotation.StartNode;
  * @author renatomesa@gmail.com (Renato Vicari Mesa)
  *
  */
-@RelationshipEntity(type="GOES_TO")
+@RelationshipEntity(type=Route.RELATIONSHIP_TYPE)
 public class Route {
 
+	public static final String RELATIONSHIP_TYPE = "GOES_TO";
+	
+	/**
+	 * This enum represents a {@link RelationshipType} demanded for neo4j database operations
+	 * @author renatomesa@gmail.com (Renato Vicari Mesa)
+	 *
+	 */
+    public enum Type implements RelationshipType
+    {
+        GOES_TO
+    }
+    
+	
 	@GraphId
 	private Long nodeId;
 	
@@ -23,7 +37,7 @@ public class Route {
 	@EndNode
 	private MapPoint destination;
 	private String mapName;
-	private int distance;
+	private double distance;
 	
 	/**
 	 * Creates a new Route
@@ -31,7 +45,7 @@ public class Route {
 	 * @param destination Destination Point
 	 * @param distance Distance in Kilometers
 	 */
-	public Route(MapPoint origin, MapPoint destination, int distance, String mapName) {
+	public Route(MapPoint origin, MapPoint destination, double distance, String mapName) {
 		this.origin = origin;
 		this.destination = destination;
 		this.distance = distance;
@@ -72,11 +86,11 @@ public class Route {
 		this.mapName = mapName;
 	}
 
-	public int getDistance() {
+	public double getDistance() {
 		return distance;
 	}
 
-	public void setDistance(int distance) {
+	public void setDistance(double distance) {
 		this.distance = distance;
 	}		
 }

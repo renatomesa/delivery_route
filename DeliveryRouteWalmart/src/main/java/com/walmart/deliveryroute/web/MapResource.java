@@ -15,7 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.walmart.deliveryroute.model.RouteCostResponse;
-import com.walmart.deliveryroute.services.IMapInterpreterService;
+import com.walmart.deliveryroute.model.ShortestPath;
+import com.walmart.deliveryroute.services.IMapManagerService;
 
 /**
  * REST endpoint of the application.
@@ -27,10 +28,10 @@ import com.walmart.deliveryroute.services.IMapInterpreterService;
 public class MapResource {
 
 @Autowired
-private IMapInterpreterService mapInterpreter;
+private IMapManagerService mapInterpreter;
 	
 /**
- * Calculate the minimum route to a given destination from a given origin.
+ * REST entry point that returns the minimum route to a given destination from a given origin.
  * @param origin
  * @param destination
  * @param autonomy
@@ -41,10 +42,11 @@ private IMapInterpreterService mapInterpreter;
 @Path("/calcroute")
 @Produces(MediaType.APPLICATION_JSON)
 public RouteCostResponse calculateCost(@QueryParam("origin") String origin, @QueryParam("destination") String destination,
-		@QueryParam("autonomy") int autonomy, @QueryParam("costPerLiter") float costPerLiter) {
+		@QueryParam("autonomy") float autonomy, @QueryParam("costPerLiter") float costPerLiter) {
 	
-	//TODO service implementation
-	return new RouteCostResponse(origin, new ArrayList<String>(), autonomy, costPerLiter);
+	ShortestPath shortestPath = mapInterpreter.getShortestPath(origin, destination, autonomy, costPerLiter);
+	
+	return new RouteCostResponse(origin, shortestPath.getPoints(), shortestPath.getDistance(), shortestPath.getTotalCost());
 }
 
 /**

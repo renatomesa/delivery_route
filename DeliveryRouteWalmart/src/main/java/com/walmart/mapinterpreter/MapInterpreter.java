@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
+import com.walmart.deliveryroute.exception.IllegalMapRepresentationException;
 import com.walmart.deliveryroute.model.MapPoint;
 import com.walmart.deliveryroute.model.Route;
 
@@ -39,7 +40,7 @@ public class MapInterpreter {
 			//maybe change to another tokenizer method, like {@link Scanner}
 			StringTokenizer tokens = new StringTokenizer(row, " ");
 			if(tokens.countTokens() != 3) {
-				throw new IllegalArgumentException("Invalid Row");
+				throw new IllegalMapRepresentationException();
 			}						
 			
 			String origin = tokens.nextToken();

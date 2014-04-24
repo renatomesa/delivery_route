@@ -20,16 +20,12 @@ import com.walmart.deliveryroute.model.Route;
  *
  */
 public class MapInterpreter {
-	
-	private void interpretateRoutes(String map) {
 		
-	}
-	
 	/**
 	 * Parses a map.
 	 * @param mapName
 	 * @param map
-	 * @return
+	 * @return A {@link List} of {@link Route} objects, which would be later added to the database
 	 */
 	public static List<Route> interpretateMap(String mapName, String map) {
 		List<Route> routeList = new ArrayList<Route>();
@@ -40,6 +36,7 @@ public class MapInterpreter {
 			//maybe change to another tokenizer method, like {@link Scanner}
 			StringTokenizer tokens = new StringTokenizer(row, " ");
 			if(tokens.countTokens() != 3) {
+				//Flow should not proceed since it is not a valid map
 				throw new IllegalMapRepresentationException();
 			}						
 			

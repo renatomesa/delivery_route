@@ -11,7 +11,10 @@ import java.util.Map;
 import org.neo4j.graphalgo.WeightedPath;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.neo4j.support.Neo4jTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.walmart.deliveryroute.dao.IMapPointDAO;
 import com.walmart.deliveryroute.dao.IRouteDAO;
@@ -39,6 +42,9 @@ public class MapManagerServiceImpl implements IMapManagerService {
 	@Autowired
 	IMapOperationsService mapOperationsService;
 	
+	@Autowired
+	Neo4jTemplate template;
+	
 	public MapManagerServiceImpl() {
 		
 	}
@@ -47,10 +53,10 @@ public class MapManagerServiceImpl implements IMapManagerService {
 	 * @see com.walmart.deliveryroute.services.IMapInterpreterService#test()
 	 */
 	@Override
+	@Transactional
 	public void performMapInterpretation(String name, String input) {
 		// TODO Auto-generated method stub
-		List<Route> allRoutes =  MapInterpreter.interpretateMap(name, input);
-		
+		List<Route> allRoutes =  MapInterpreter.interpretateMap(name, input);		
 		for (Route route : allRoutes) {
 			MapPoint origin = null;
 			MapPoint destination = null;
@@ -67,13 +73,9 @@ public class MapManagerServiceImpl implements IMapManagerService {
 			map.put("distance", route.getDistance());
 			map.put("mapName", route.getMapName());
 			
+			//There is no requirement regarding redundant path. Anyway, if there is a duplicate relationship which covers the same nodes, both are considered valid
 			routeDao.createRoute(origin, destination, route.getDistance(), route.getMapName());
-			
-/*			routeCreated.setDistance(route.getDistance());
-			routeCreated.setMapName(route.getMapName());
-			template.save(routeCreated);*/
 		}
-		//need to store Map...
 	}
 
 	/* (non-Javadoc)

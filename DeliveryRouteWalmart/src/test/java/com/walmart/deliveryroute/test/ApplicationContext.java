@@ -1,13 +1,15 @@
 /**
  * 
  */
-package com.walmart.deliveryroute;
+package com.walmart.deliveryroute.test;
 
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
+import org.springframework.data.neo4j.support.Neo4jTemplate;
 
 import com.walmart.deliveryroute.dao.IMapPointDAO;
 import com.walmart.deliveryroute.dao.IRouteDAO;
@@ -19,20 +21,13 @@ import com.walmart.deliveryroute.services.impl.GraphOperationsServiceImpl;
 import com.walmart.deliveryroute.services.impl.MapManagerServiceImpl;
 
 /**
- * Configuration class for Spring
  * @author renatomesa@gmail.com (Renato Vicari Mesa)
  *
  */
 @Configuration
-@EnableTransactionManagement
-@ComponentScan
-@ImportResource("classpath:spring/application-context.xml")
-public class ApplicationConfiguration{
-	
-	@Bean(name="MapInterpreterServiceBean")
-	public IMapManagerService createMapInterpreterService() {
-		return new MapManagerServiceImpl();
-	}
+@EnableNeo4jRepositories
+@ImportResource("classpath:spring/application-context-tests.xml")
+public class ApplicationContext {
 	
 	@Bean(name="MapOperationsDaoBean")
 	public IMapOperationsService getMapOperationsService(){
@@ -48,5 +43,10 @@ public class ApplicationConfiguration{
 	public IMapPointDAO getMapPointDao(){
 		return new MapPointDAOImpl();
 	}
-
+	
+	@Bean(name="MapInterpreterServiceBean")
+	public IMapManagerService createMapInterpreterService() {
+		return new MapManagerServiceImpl();
+	}
+	
 }

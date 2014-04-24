@@ -1,11 +1,10 @@
 /**
  * 
  */
-package com.walmart.deliveryroute.dao.graph;
+package com.walmart.deliveryroute.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.walmart.deliveryroute.dao.IMapPointDAO;
 import com.walmart.deliveryroute.model.MapPoint;
@@ -27,18 +26,18 @@ public class MapPointDAOImpl implements IMapPointDAO {
 	 * @see com.walmart.deliveryroute.dao.IMapPointDAO#saveMapPoint(com.walmart.deliveryroute.model.MapPoint)
 	 */
 	@Override
-	@Transactional
 	public MapPoint saveMapPoint(MapPoint mapPoint) {
-		return mapPointRepository.save(mapPoint);
+		//return mapPointRepository.save(mapPoint);
+		return template.save(mapPoint);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.walmart.deliveryroute.dao.IMapPointDAO#deleteMapPoint(com.walmart.deliveryroute.model.MapPoint)
 	 */
 	@Override
-	@Transactional
 	public MapPoint deleteMapPoint(MapPoint mapPoint) {
-		mapPointRepository.delete(mapPoint);
+		//mapPointRepository.delete(mapPoint);
+		template.delete(mapPoint);
 		return null;
 		
 	}
@@ -47,7 +46,6 @@ public class MapPointDAOImpl implements IMapPointDAO {
 	 * @see com.walmart.deliveryroute.dao.IMapPointDAO#findMapPointById(java.lang.Long)
 	 */
 	@Override
-	@Transactional
 	public MapPoint findMapPointById(Long id) {
 		return mapPointRepository.findOne(id);
 	}
@@ -56,7 +54,6 @@ public class MapPointDAOImpl implements IMapPointDAO {
 	 * @see com.walmart.deliveryroute.dao.IMapPointDAO#findMapPoint(com.walmart.deliveryroute.model.MapPoint)
 	 */
 	@Override
-	@Transactional
 	public MapPoint findMapPoint(MapPoint mapPoint) {
 		return mapPointRepository.findOne(mapPoint.getNodeId());
 	}
@@ -65,9 +62,7 @@ public class MapPointDAOImpl implements IMapPointDAO {
 	 * @see com.walmart.deliveryroute.dao.IMapPointDAO#findByProperty(java.lang.String, java.lang.Object)
 	 */
 	@Override
-	@Transactional
 	public MapPoint findMapPointByProperty(String property, Object value) {
 		return mapPointRepository.findByPropertyValue(property, value);
-	}
-
+	}	
 }

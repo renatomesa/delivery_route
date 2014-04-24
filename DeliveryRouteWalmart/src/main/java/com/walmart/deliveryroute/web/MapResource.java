@@ -51,16 +51,15 @@ public RouteCostResponse calculateCost(@QueryParam("origin") String origin, @Que
 
 /**
  * Receives a map as plain-text, parse it and add to database.
- * @param mapName
- * @param text
+ * @param mapName Name of the map
+ * @param data Map data
  * @return
  */
 @POST
 @Consumes(MediaType.TEXT_PLAIN)
-public Response inputMap(@QueryParam("mapName") String mapName, String text) {
+public Response inputMap(@QueryParam("mapName") String mapName, String data) {
 	
-	mapInterpreter.performMapInterpretation(mapName, text);
-	
+	mapInterpreter.performMapInterpretation(mapName, data);
 	return Response.ok().build();
 }
 

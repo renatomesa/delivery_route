@@ -20,5 +20,4 @@ public interface IMapPointDAO {
 	public MapPoint findMapPoint(MapPoint mapPoint);
 	
 	public MapPoint findMapPointByProperty(String property, Object value);
-	
 }

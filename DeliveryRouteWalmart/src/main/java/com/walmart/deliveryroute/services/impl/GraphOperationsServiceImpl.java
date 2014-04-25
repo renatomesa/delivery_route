@@ -13,6 +13,7 @@ import org.neo4j.graphalgo.PathFinder;
 import org.neo4j.graphalgo.WeightedPath;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.PathExpander;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipExpander;
 import org.neo4j.graphdb.RelationshipType;
@@ -26,24 +27,19 @@ import com.walmart.deliveryroute.model.ShortestPath;
 import com.walmart.deliveryroute.services.IMapOperationsService;
 
 /**
+ * This {@link IMapOperationsService} implementation provides methods to perform operations over a map into a Graph.
  * @author renatomesa@gmail.com (Renato Vicari Mesa)
  *
  */
 public class GraphOperationsServiceImpl implements IMapOperationsService {
 
-    private final RelationshipExpander expander;
+    private final PathExpander expander;
     private final CostEvaluator<Double> costEvaluator;
     private final PathFinder<WeightedPath> dijkstraPathFinder;
 
-    public enum MyDijkstraTypes implements RelationshipType
     {
-        GOES_TO
-    }
-    
-    {
-        // set up path finder
-        expander = Traversal.expanderForTypes(
-                Route.Type.GOES_TO, Direction.OUTGOING );
+    	//Initialize search engine
+    	expander = Traversal.pathExpanderForTypes(Route.Type.GOES_TO, Direction.OUTGOING);
         costEvaluator = CommonEvaluators.doubleCostEvaluator( "distance" );
         dijkstraPathFinder = GraphAlgoFactory.dijkstra( expander, costEvaluator );
     }

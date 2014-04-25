@@ -27,5 +27,11 @@ public interface IMapManagerService {
 	public void performMapInterpretation(String mapName, String mapData);
 	
 	public ShortestPath getShortestPath(String origin, String destination, float autonomy, float fuelCost);
+
+	/**
+	 * @param name
+	 * @param input
+	 */
+	void performParallaleMapInterpretation(String name, String input);
 	
 }

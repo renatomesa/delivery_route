@@ -10,4 +10,7 @@ package com.walmart.deliveryroute;
  */
 public class Constants {
 
+	public static final String MAP_RESOURCE_URL = "/map";
+	public static final String PATH_RESOURCE_URL = "/path";
+	
 }

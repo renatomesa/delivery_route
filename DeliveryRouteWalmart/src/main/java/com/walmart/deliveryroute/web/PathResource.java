@@ -25,26 +25,28 @@ import com.walmart.deliveryroute.services.IMapManagerService;
  *
  */
 @Component
-@Path(Constants.MAP_RESOURCE_URL)
-public class MapResource {
+@Path(Constants.PATH_RESOURCE_URL)
+public class PathResource {
 
 @Autowired
 private IMapManagerService mapInterpreter;
 	
-
-
 /**
- * Receives a map as plain-text, parse it and add to database.
- * @param mapName Name of the map
- * @param data Map data
+ * REST entry point that returns the minimum route to a given destination from a given origin.
+ * @param origin
+ * @param destination
+ * @param autonomy
+ * @param costPerLiter
  * @return
  */
-@POST
-@Consumes(MediaType.TEXT_PLAIN)
-public Response inputMap(@QueryParam("mapName") String mapName, String data) {
+@GET
+@Produces(MediaType.APPLICATION_JSON)
+public RouteCostResponse calculateCost(@QueryParam("origin") String origin, @QueryParam("destination") String destination,
+		@QueryParam("autonomy") float autonomy, @QueryParam("costPerLiter") float costPerLiter) {
 	
-	mapInterpreter.performMapInterpretation(mapName, data);
-	return Response.ok().build();
+	ShortestPath shortestPath = mapInterpreter.getShortestPath(origin, destination, autonomy, costPerLiter);
+	
+	return new RouteCostResponse(origin, shortestPath.getPoints(), shortestPath.getDistance(), shortestPath.getTotalCost());
 }
 
 } 

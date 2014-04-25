@@ -12,6 +12,8 @@ import com.walmart.deliveryroute.model.Route;
 import com.walmart.deliveryroute.repository.MapPointRepository;
 
 /**
+ * This implementation uses as bases Graph databases and requires {@link Autowired} objects for {@link MapPointRepository} and {@link Neo4jTemplate} using
+ * Spring framework to perform {@link Route} operations.
  * @author renatomesa@gmail.com (Renato Vicari Mesa)
  *
  */

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import org.neo4j.graphalgo.WeightedPath;
 import org.neo4j.graphdb.Node;
@@ -23,7 +24,7 @@ import com.walmart.deliveryroute.model.Route;
 import com.walmart.deliveryroute.model.ShortestPath;
 import com.walmart.deliveryroute.services.IMapOperationsService;
 import com.walmart.deliveryroute.services.IMapManagerService;
-import com.walmart.mapinterpreter.MapInterpreter;
+import com.walmart.deliveryroute.utils.MapInterpreter;
 
 /**
  * This class implements {@link IMapManagerService} and it is responsible for interpreting a map input,
@@ -69,27 +70,36 @@ public class MapManagerServiceImpl implements IMapManagerService {
 			if(destination == null) {
 				destination = mapPointDao.saveMapPoint(route.getDestination());
 			}
-			Map<String,Object> map = new HashMap<String,Object>();
-			map.put("distance", route.getDistance());
-			map.put("mapName", route.getMapName());
 			
 			//There is no requirement regarding redundant path. Anyway, if there is a duplicate relationship which covers the same nodes, both are considered valid
 			routeDao.createRoute(origin, destination, route.getDistance(), route.getMapName());
 		}
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see com.walmart.deliveryroute.services.IMapInterpreterService#getShortestPath(java.lang.String, java.lang.String, float, float)
 	 */
 	@Override
 	public ShortestPath getShortestPath(String origin, String destination,
 			float autonomy, float fuelCost) {
+		
     	MapPoint startNode = mapPointDao.findMapPointByProperty("name", origin);
     	MapPoint endNode = mapPointDao.findMapPointByProperty("name", destination);
+
+    	
     	
     	ShortestPath returnedPath = mapOperationsService.findShortestPath(startNode, endNode);
 		returnedPath.calculateTotalCost(autonomy, fuelCost);
 		return returnedPath;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.walmart.deliveryroute.services.IMapManagerService#performParallaleMapInterpretation(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void performParallaleMapInterpretation(String name, String input) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

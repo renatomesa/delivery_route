@@ -9,7 +9,7 @@ import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 
 /**
- * POJO which represents a single Node
+ * POJO which represents a single Node, which can be used as an origin or destination
  * @author renatomesa@gmail.com (Renato Vicari Mesa)
  *
  */

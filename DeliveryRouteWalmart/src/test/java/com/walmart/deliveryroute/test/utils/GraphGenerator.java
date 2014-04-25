@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.walmart.deliveryroute.test;
+package com.walmart.deliveryroute.test.utils;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -22,9 +22,9 @@ import scala.testing.SUnit.TestCase;
 public class GraphGenerator {
 
 
-	private static final long NODE_NUMBER = 500;
+	private static final long NODE_NUMBER = 10000;
 	
-	private static final long MAX_TOTAL_NODES = 10000;
+	private static final long MAX_TOTAL_NODES = 500000;
 	
 	private static final long MAX_OUTGOING_EDGE_NUMBER = 20;
 	

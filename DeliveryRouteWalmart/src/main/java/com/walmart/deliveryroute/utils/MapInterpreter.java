@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.walmart.mapinterpreter;
+package com.walmart.deliveryroute.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +22,7 @@ import com.walmart.deliveryroute.model.Route;
 public class MapInterpreter {
 		
 	/**
-	 * Parses a map.
+	 * Utility class responsible for parsing a text input, retrieving {@link Route} objects
 	 * @param mapName
 	 * @param map
 	 * @return A {@link List} of {@link Route} objects, which would be later added to the database

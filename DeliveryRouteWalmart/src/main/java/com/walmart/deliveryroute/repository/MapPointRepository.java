@@ -9,7 +9,7 @@ import org.springframework.data.neo4j.repository.RelationshipOperationsRepositor
 import com.walmart.deliveryroute.model.MapPoint;
 
 /**
- * This inteface extends String Data Neo4J {@link GraphRepository} in order to provide basic operations with data in the graph database for {@link MapPoint} objects. 
+ * This inteface extends String Data Neo4J {@link GraphRepository} in order to provide basic operations with data in the graph database for {@link MapPoint} objects.  Requires Spring usage.
  * @author renatomesa@gmail.com (Renato Vicari Mesa)
  *
  */

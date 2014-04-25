@@ -5,6 +5,9 @@ Wallmart admission test.
 
 This repository contains the source code of the admission test for walmart.com for Renato Mesa.
 
+
+Goal
+==============
 The main goal of the project is to store map structures represented by the following information:
 
 1-Origin 	2-Destination 	3-Distance

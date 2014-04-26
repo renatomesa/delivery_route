@@ -41,11 +41,8 @@ public class MapManagerServiceImpl implements IMapManagerService {
 	@Autowired
 	IMapOperationsService mapOperationsService;
 	
-	
-	ExecutorService executorService;
 
 	public MapManagerServiceImpl() {
-		this.executorService = Executors.newFixedThreadPool(5);
 	}
 
 	/* (non-Javadoc)
@@ -53,22 +50,51 @@ public class MapManagerServiceImpl implements IMapManagerService {
 	 */
 	@Override
 	@Transactional
-	public void performMapInterpretation(String name, String input) {		
+	public MapInterpretationContainer performMapInterpretation(String name, String input) {		
 		MapInterpretationContainer result = MapInterpreter.interpretateMap(name, input);
-		createMapStructure(result);
+		return result;
+	}
+	
+	@Override
+	public MapInterpretationContainer performMapInterpretation(File f) throws IOException {
+		MapInterpretationContainer result = MapInterpreter.interpretateMap(f);	
+		return result;
+	}	
+	
+	@Override
+	@Transactional
+	public void insertMapPoints(Map<String, MapPoint> mapPoints) {
+		System.out.println("Map Points to be Created");
+		
+		Set<String> nodesSet = mapPoints.keySet();
+		
+		for (String string : nodesSet) {
+			MapPoint mapPoint = mapPoints.get(string);
+			//create or replace
+			MapPoint createdMapPoint = mapPointDao.saveMapPoint(mapPoint);
+			mapPoint.setNodeId(createdMapPoint.getNodeId());
+		}
+		
+		System.out.println("Created Map Points");
 	}
 	
 	@Override
 	@Transactional
-	public void performMapInterpretation(File f) throws IOException {
-		MapInterpretationContainer result = MapInterpreter.interpretateMap(f);
-		System.out.println("Starting creating data into Database");
-		createMapStructure(result);
-		System.out.println("Finished creating data into Database");
-		
-		
-	}	
+	public void insertRoutes(Map<String, MapPoint> mapPoints, List<Route> routes) {	
+
+		for (Route route : routes) {
+			MapPoint origin = null;
+			MapPoint destination = null;
+			origin = mapPoints.get(route.getOrigin().getName());
+			
+			destination = mapPoints.get(route.getDestination().getName());
+
+			//There is no requirement regarding redundant path. Anyway, if there is a duplicate relationship which covers the same nodes, both are considered valid
+			routeDao.createRoute(origin, destination, route.getDistance(), route.getMapName());
+		}
+	}
 	
+	@Deprecated
 	private void createMapStructure(MapInterpretationContainer mapRecords) {
 		//Firstly all map points are inserted
 		Map<String, MapPoint> nodes = mapRecords.getMapPoints();
@@ -86,7 +112,7 @@ public class MapManagerServiceImpl implements IMapManagerService {
 		System.out.println("Created Map Points");
 		
 		// Then later the routes are added between them
-		List<Route> allRoutes =  mapRecords.getRouteList();		
+		List<Route> allRoutes =  mapRecords.getRouteList().get(0);		
 
 		for (Route route : allRoutes) {
 			MapPoint origin = null;
@@ -115,6 +141,15 @@ public class MapManagerServiceImpl implements IMapManagerService {
     	
     	ShortestPath returnedPath = mapOperationsService.findShortestPath(startNode, endNode);
 		return returnedPath;
+	}
+	
+	@Override
+	@Transactional
+	public void insertMap(MapInterpretationContainer mapContainer) {
+		this.insertMapPoints(mapContainer.getMapPoints());
+		for (List<Route> routes : mapContainer.getRouteList()) {
+			this.insertRoutes(mapContainer.getMapPoints(), routes);
+		}
 	}
 		
 }

@@ -35,16 +35,30 @@ public class MapInterpreter {
 		String line = buf.readLine();
 		String mapName = line;
 
-		List<Route> routeList = new ArrayList<Route>();
+		List<Route> subRouteList = new ArrayList<Route>();
 
 		Map<String, MapPoint> mapPoints = new HashMap<String, MapPoint>();
 		line = buf.readLine();
 		
+		List<List<Route>> routeList = new ArrayList<List<Route>>();
+		
+		int countRoutesBuffer = 0;
+		
 		while (line != null) {
-			lineParser(line, mapPoints, routeList, mapName);
+			if(++countRoutesBuffer >10000) {
+				routeList.add(subRouteList);
+				subRouteList = new ArrayList<Route>();
+				countRoutesBuffer = 0;
+			}
+			
+			lineParser(line, mapPoints, subRouteList, mapName);
 			line = buf.readLine();
 		}
 
+		if(countRoutesBuffer > 0) {
+			routeList.add(subRouteList);
+		}
+		
 		buf.close();
 		
 		return new MapInterpretationContainer(routeList, mapPoints);
@@ -61,14 +75,20 @@ public class MapInterpreter {
 	 */
 	public static MapInterpretationContainer interpretateMap(String mapName,
 			String map) {
-		List<Route> routeList = new ArrayList<Route>();
+		List<Route> subRouteList = new ArrayList<Route>();
 
+		List<List<Route>> routeList = new ArrayList<List<Route>>();
+		
+		
 		Map<String, MapPoint> mapPoints = new HashMap<String, MapPoint>();
 
 		String[] rows = map.split("\n");
 		for (String row : rows) {
-			lineParser(row, mapPoints, routeList, mapName);
+			lineParser(row, mapPoints, subRouteList, mapName);
 		}
+		
+		routeList.add(subRouteList);
+		
 		return new MapInterpretationContainer(routeList, mapPoints);
 	}
 

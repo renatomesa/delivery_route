@@ -17,6 +17,7 @@ import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.walmart.deliveryroute.model.MapInterpretationContainer;
 import com.walmart.deliveryroute.model.ShortestPath;
 import com.walmart.deliveryroute.services.IMapManagerService;
 import com.walmart.deliveryroute.test.ApplicationContext;
@@ -57,7 +58,8 @@ public class GraphOperationsServiceTest extends TestCase {
 		// Test map interpretation and database storage. I avoid using Mockito
 		// here to check exactly if database performs well,
 		// so more elaborated tests can be performed.
-		managerService.performMapInterpretation("map1", fileData);
+		MapInterpretationContainer container = managerService.performMapInterpretation("map1", fileData);
+		managerService.insertMap(container);
 				
 	}
 	

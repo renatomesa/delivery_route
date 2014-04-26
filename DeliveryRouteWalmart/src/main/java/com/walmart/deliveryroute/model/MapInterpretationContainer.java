@@ -5,12 +5,12 @@ import java.util.Map;
 
 public class MapInterpretationContainer {
 
-	private List<Route> routeList;
+	private List<List<Route>> routeList;
 	private Map<String, MapPoint> mapPoints;
-	public List<Route> getRouteList() {
+	public List<List<Route>> getRouteList() {
 		return routeList;
 	}
-	public void setRouteList(List<Route> routeList) {
+	public void setRouteList(List<List<Route>> routeList) {
 		this.routeList = routeList;
 	}
 	public Map<String, MapPoint> getMapPoints() {
@@ -19,7 +19,7 @@ public class MapInterpretationContainer {
 	public void setMapPoints(Map<String, MapPoint> mapPoints) {
 		this.mapPoints = mapPoints;
 	}
-	public MapInterpretationContainer(List<Route> routeList,
+	public MapInterpretationContainer(List<List<Route>> routeList,
 			Map<String, MapPoint> mapPoints) {
 		super();
 		this.routeList = routeList;

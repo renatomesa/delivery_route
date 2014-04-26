@@ -2,12 +2,15 @@ package com.walmart.deliveryroute.services.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.walmart.deliveryroute.exception.FileNotCreatedException;
+import com.walmart.deliveryroute.model.MapInterpretationContainer;
+import com.walmart.deliveryroute.model.Route;
 import com.walmart.deliveryroute.services.IMapManagerService;
 import com.walmart.deliveryroute.utils.MapFileUtils;
 
@@ -48,7 +51,18 @@ public class MapProcessor {
 		@Override
 		public void run() {
 			try {
-				mapManager.performMapInterpretation(file);
+				MapInterpretationContainer container = mapManager.performMapInterpretation(file);
+				mapManager.insertMapPoints(container.getMapPoints());
+				
+				int counter = 0;
+				
+				for (List<Route> routes : container.getRouteList()) {
+					mapManager.insertRoutes(container.getMapPoints(), routes);
+					counter += routes.size();
+				}
+				
+				System.out.println(counter + " routes added.");
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

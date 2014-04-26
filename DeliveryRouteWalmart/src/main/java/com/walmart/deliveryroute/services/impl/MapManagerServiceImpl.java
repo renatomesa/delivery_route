@@ -3,27 +3,25 @@
  */
 package com.walmart.deliveryroute.services.impl;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import org.neo4j.graphalgo.WeightedPath;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.walmart.deliveryroute.dao.IMapPointDAO;
 import com.walmart.deliveryroute.dao.IRouteDAO;
+import com.walmart.deliveryroute.model.MapInterpretationContainer;
 import com.walmart.deliveryroute.model.MapPoint;
 import com.walmart.deliveryroute.model.Route;
 import com.walmart.deliveryroute.model.ShortestPath;
-import com.walmart.deliveryroute.services.IMapOperationsService;
 import com.walmart.deliveryroute.services.IMapManagerService;
+import com.walmart.deliveryroute.services.IMapOperationsService;
 import com.walmart.deliveryroute.utils.MapInterpreter;
 
 /**
@@ -43,11 +41,11 @@ public class MapManagerServiceImpl implements IMapManagerService {
 	@Autowired
 	IMapOperationsService mapOperationsService;
 	
-	@Autowired
-	Neo4jTemplate template;
 	
+	ExecutorService executorService;
+
 	public MapManagerServiceImpl() {
-		
+		this.executorService = Executors.newFixedThreadPool(5);
 	}
 
 	/* (non-Javadoc)
@@ -55,26 +53,55 @@ public class MapManagerServiceImpl implements IMapManagerService {
 	 */
 	@Override
 	@Transactional
-	public void performMapInterpretation(String name, String input) {
-		// TODO Auto-generated method stub
-		List<Route> allRoutes =  MapInterpreter.interpretateMap(name, input);		
+	public void performMapInterpretation(String name, String input) {		
+		MapInterpretationContainer result = MapInterpreter.interpretateMap(name, input);
+		createMapStructure(result);
+	}
+	
+	@Override
+	@Transactional
+	public void performMapInterpretation(File f) throws IOException {
+		MapInterpretationContainer result = MapInterpreter.interpretateMap(f);
+		System.out.println("Starting creating data into Database");
+		createMapStructure(result);
+		System.out.println("Finished creating data into Database");
+		
+		
+	}	
+	
+	private void createMapStructure(MapInterpretationContainer mapRecords) {
+		//Firstly all map points are inserted
+		Map<String, MapPoint> nodes = mapRecords.getMapPoints();
+		Set<String> nodesSet = nodes.keySet();
+		
+		System.out.println("Map Points to be Created");
+		
+		for (String string : nodesSet) {
+			MapPoint mapPoint = nodes.get(string);
+			//create or replace
+			MapPoint createdMapPoint = mapPointDao.saveMapPoint(mapPoint);
+			mapPoint.setNodeId(createdMapPoint.getNodeId());
+		}
+		
+		System.out.println("Created Map Points");
+		
+		// Then later the routes are added between them
+		List<Route> allRoutes =  mapRecords.getRouteList();		
+
 		for (Route route : allRoutes) {
 			MapPoint origin = null;
 			MapPoint destination = null;
-			origin = mapPointDao.findMapPointByProperty("name", route.getOrigin().getName());
-			if(origin == null) {
-				origin = mapPointDao.saveMapPoint(route.getOrigin());
-			}
+			origin = nodes.get(route.getOrigin().getName());
 			
-			destination = mapPointDao.findMapPointByProperty("name", route.getDestination().getName());
-			if(destination == null) {
-				destination = mapPointDao.saveMapPoint(route.getDestination());
-			}
-			
+			destination = nodes.get(route.getDestination().getName());
+
 			//There is no requirement regarding redundant path. Anyway, if there is a duplicate relationship which covers the same nodes, both are considered valid
 			routeDao.createRoute(origin, destination, route.getDistance(), route.getMapName());
 		}
+		
+		System.out.println("Relationships Created");
 	}
+	
 	
 	/* (non-Javadoc)
 	 * @see com.walmart.deliveryroute.services.IMapInterpreterService#getShortestPath(java.lang.String, java.lang.String, float, float)
@@ -85,21 +112,9 @@ public class MapManagerServiceImpl implements IMapManagerService {
 		
     	MapPoint startNode = mapPointDao.findMapPointByProperty("name", origin);
     	MapPoint endNode = mapPointDao.findMapPointByProperty("name", destination);
-
-    	
     	
     	ShortestPath returnedPath = mapOperationsService.findShortestPath(startNode, endNode);
-		returnedPath.calculateTotalCost(autonomy, fuelCost);
 		return returnedPath;
 	}
-
-	/* (non-Javadoc)
-	 * @see com.walmart.deliveryroute.services.IMapManagerService#performParallaleMapInterpretation(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public void performParallaleMapInterpretation(String name, String input) {
-		// TODO Auto-generated method stub
 		
-	}
-	
 }

@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.walmart.deliveryroute.model.ShortestPath;
 import com.walmart.deliveryroute.services.IMapManagerService;
 import com.walmart.deliveryroute.test.ApplicationContext;
+import com.walmart.deliveryroute.utils.FuelCostCalculator;
 
 /**
  * @author renatomesa@gmail.com (Renato Vicari Mesa)
@@ -27,6 +28,7 @@ import com.walmart.deliveryroute.test.ApplicationContext;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationContext.class)
+@SuppressWarnings("rawtypes")
 // @ImportResource("classpath:spring/application-context.xml")
 public class GraphOperationsServiceTest extends TestCase {
 
@@ -62,6 +64,9 @@ public class GraphOperationsServiceTest extends TestCase {
 	@Test
 	public void testShortestPathSearch() {
 		ShortestPath shortestPath = managerService.getShortestPath("A", "D", 10, 2.5f);
+		
+		double cost = FuelCostCalculator.calculateCost(shortestPath.getDistance(),10, 2.5f);
+		shortestPath.setTotalCost(cost);
 		
 		//check if retrieved object contains same data as expected
 		assertNotNull(shortestPath);

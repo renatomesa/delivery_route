@@ -11,37 +11,22 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
-import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
-import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.repository.GraphRepository;
-import org.springframework.data.neo4j.support.Neo4jTemplate;
-import org.springframework.test.AssertThrows;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
-import com.walmart.deliveryroute.dao.IMapPointDAO;
-import com.walmart.deliveryroute.dao.IRouteDAO;
-import com.walmart.deliveryroute.dao.impl.MapPointDAOImpl;
-import com.walmart.deliveryroute.dao.impl.RouteDAOImpl;
 import com.walmart.deliveryroute.exception.IllegalMapRepresentationException;
-import com.walmart.deliveryroute.model.MapPoint;
-import com.walmart.deliveryroute.repository.MapPointRepository;
+import com.walmart.deliveryroute.model.response.MapInsertionResponse;
 import com.walmart.deliveryroute.services.IMapManagerService;
-import com.walmart.deliveryroute.services.IMapOperationsService;
-import com.walmart.deliveryroute.services.impl.GraphOperationsServiceImpl;
 import com.walmart.deliveryroute.test.ApplicationContext;
+import com.walmart.deliveryroute.utils.MapFileUtils;
 import com.walmart.deliveryroute.utils.MapInterpreter;
+import com.walmart.deliveryroute.web.MapResource;
 
 /**
  * Test class which test main features of the system, which are: map creation
@@ -52,7 +37,7 @@ import com.walmart.deliveryroute.utils.MapInterpreter;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationContext.class)
-// @ImportResource("classpath:spring/application-context.xml")
+@SuppressWarnings("rawtypes")
 public class MapManagerServiceTest extends TestCase {
 
     @Autowired
@@ -64,6 +49,9 @@ public class MapManagerServiceTest extends TestCase {
 	// This member is created by Spring Data Neo4J
 	@Autowired
 	GraphDatabaseService graphDatabaseService;
+	
+	@Autowired
+	MapResource mapResource;
 
 	@Before
 	public void loadMap() throws IOException {
@@ -94,6 +82,29 @@ public class MapManagerServiceTest extends TestCase {
 		assertNotNull(MapInterpreter.interpretateMap("map1", fileData));
 	}
 
+	@Test
+	public void testSaveMapStreamAndInterprete() throws IOException {
+		File f = MapFileUtils.saveMapStream("name", "A B 10");
+		MapInterpreter.interpretateMap(f);
+		
+		if(f!= null) {
+			f.delete();
+		}
+	}
+	
+	@Test
+	public void testMapInterpretationAsFile() throws IOException {
+		File f = new File("./src/test/resources/maps/map-500kRelationships.txt");
+		MapInterpreter.interpretateMap(f);
+	}
+	
+	@Test
+	public void testMapInsertionWebResource() throws IOException {
+		String fileData = loadMapFromFile("./src/test/resources/maps/map-10nodes.txt");
+		//MapInsertionResponse response = mapResource.inputMap("testMap", fileData);
+		//assertEquals(response.isStatus(),true);
+	}
+	
 	/**
 	 * This method simply loads a map file from resources folder, simulating the
 	 * input via web-service.

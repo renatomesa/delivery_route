@@ -59,6 +59,10 @@ public class GraphOperationsServiceImpl implements IMapOperationsService {
         List<MapPoint> points = new LinkedList<MapPoint>();
         List<Route> routes = new LinkedList<Route>();
         
+        if(path == null || points == null || routes == null) {
+        	return null;
+        }
+        
         Iterable<Node> nodes = path.nodes();
         Iterable<Relationship> relationships = path.relationships();
         for (Node node : nodes) {

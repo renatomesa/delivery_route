@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.walmart.deliveryroute.Constants;
-import com.walmart.deliveryroute.model.response.MapInsertionResponse;
+import com.walmart.deliveryroute.model.response.JsonResponse;
 import com.walmart.deliveryroute.services.IMapManagerService;
 import com.walmart.deliveryroute.services.impl.MapProcessor;
 
@@ -41,12 +41,12 @@ private MapProcessor mapProcessor;
  */
 @POST
 @Consumes(MediaType.TEXT_PLAIN)
-public MapInsertionResponse inputMap(@QueryParam("mapName") String mapName, String data) throws IOException {
+public Response inputMap(@QueryParam("mapName") String mapName, String data) throws IOException {
 
 	//This service is responsible for storing file data and starting a thread to interpretate it.
 	mapProcessor.processMap(mapName, data);
 	
-	return new MapInsertionResponse(true, Constants.MAP_INSERTION_RESPONSE_SUCCESS_MESSAGE);
+	return Response.ok(new JsonResponse(Constants.MAP_INSERTION_RESPONSE_SUCCESS_MESSAGE), MediaType.APPLICATION_JSON).build();
 }
 
 

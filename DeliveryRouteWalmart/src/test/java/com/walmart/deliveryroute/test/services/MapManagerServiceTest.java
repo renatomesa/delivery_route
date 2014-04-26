@@ -22,7 +22,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.walmart.deliveryroute.exception.IllegalMapRepresentationException;
 import com.walmart.deliveryroute.model.MapInterpretationContainer;
-import com.walmart.deliveryroute.model.response.MapInsertionResponse;
 import com.walmart.deliveryroute.services.IMapManagerService;
 import com.walmart.deliveryroute.test.ApplicationContext;
 import com.walmart.deliveryroute.utils.MapFileUtils;

@@ -5,6 +5,8 @@ package com.walmart.deliveryroute.model.response;
 
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import com.walmart.deliveryroute.model.MapPoint;
 
 /**
@@ -14,10 +16,14 @@ import com.walmart.deliveryroute.model.MapPoint;
  */
 public class RouteCostResponse {
 
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 	private String origin;
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 	List<MapPoint> destinationsVisited;
-	private double distance;
-	private double totalCost;
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	private Double distance;
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	private Double totalCost;
 	
 	
 	

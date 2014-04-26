@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.walmart.deliveryroute.dao.IMapPointDAO;
 import com.walmart.deliveryroute.dao.IRouteDAO;
+import com.walmart.deliveryroute.exception.IllegalMapPointInputException;
 import com.walmart.deliveryroute.model.MapInterpretationContainer;
 import com.walmart.deliveryroute.model.MapPoint;
 import com.walmart.deliveryroute.model.Route;
@@ -138,6 +139,11 @@ public class MapManagerServiceImpl implements IMapManagerService {
 		
     	MapPoint startNode = mapPointDao.findMapPointByProperty("name", origin);
     	MapPoint endNode = mapPointDao.findMapPointByProperty("name", destination);
+    	
+    	//they must exist
+    	if(startNode == null || endNode == null) {
+    		throw new IllegalMapPointInputException();
+    	}
     	
     	ShortestPath returnedPath = mapOperationsService.findShortestPath(startNode, endNode);
 		return returnedPath;

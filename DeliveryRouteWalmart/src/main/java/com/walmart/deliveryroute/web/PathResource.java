@@ -5,12 +5,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.walmart.deliveryroute.Constants;
 import com.walmart.deliveryroute.model.ShortestPath;
+import com.walmart.deliveryroute.model.response.JsonResponse;
 import com.walmart.deliveryroute.model.response.RouteCostResponse;
 import com.walmart.deliveryroute.services.IMapManagerService;
 import com.walmart.deliveryroute.utils.FuelCostCalculator;
@@ -41,18 +43,26 @@ public class PathResource {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public RouteCostResponse calculateCostJson(@QueryParam("origin") String origin,
+	public Response calculateCostJson(@QueryParam("origin") String origin,
 			@QueryParam("destination") String destination,
 			@QueryParam("autonomy") float autonomy,
-			@QueryParam("costPerLiter") float costPerLiter) {
+			@QueryParam("cost_liter") float costPerLiter) {
 
-		ShortestPath shortestPath = mapInterpreter.getShortestPath(origin,
+		ShortestPath shortestPath;
+		try {
+		shortestPath = mapInterpreter.getShortestPath(origin,
 				destination, autonomy, costPerLiter);
-
+		} catch (Exception e) {
+			JsonResponse response = new JsonResponse("Path not found");
+			return Response.status(404).entity(response).type(MediaType.APPLICATION_JSON).build();
+		}
+		
 		double cost = FuelCostCalculator.calculateCost(
 				shortestPath.getDistance(), autonomy, costPerLiter);
 		shortestPath.setTotalCost(cost);
-		return new RouteCostResponse(origin, shortestPath.getPoints(),
+		RouteCostResponse response =  new RouteCostResponse(origin, shortestPath.getPoints(),
 				shortestPath.getDistance(), shortestPath.getTotalCost());
+		
+		return Response.ok(response, MediaType.APPLICATION_JSON).build();
 	}
 }

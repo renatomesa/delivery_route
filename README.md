@@ -83,7 +83,7 @@ To run the system, follow the procedures below:
 
 - Clone the repository
 - With maven installed and added to PATH, run "mvn package" in the root folder of DeliveryRouteWalmart.
-- Add the following line to your server.xml file of tomcat, inside Host tag. (change %TAG and %END_TAG with xml tag syntax):
+- Add the following line to your server.xml file of tomcat, inside Host tag:
 ```html
 <Context docBase="DeliveryRouteWalmart" path="/DeliveryRouteWalmart" reloadable="true"/>
 ```

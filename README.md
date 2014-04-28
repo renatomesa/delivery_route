@@ -44,27 +44,54 @@ performance and responsiviness of the system. At last, a web interface to demons
 For now, the system is a Maven project implemented in Java, using Spring and Jersey to implement REST servlet and manage depency injection of the services. Spring
 is also used with Neo4j for transaction control and database operations. 
 
-Implementation Details
+Implementation
 ==============
 
-As mentioned previously, this implementation is based on a Jersey Servlet with Spring CDI and exposes REST Apis using JAX-RS.
+The implementation is based on a Java EE Maven project which relies upon Jersey, Spring and Neo4J to run.
 
-The map files, once received, are stored in a text file which also contains the map name. Once the file is saved, the REST resource returns 200 OK response to the user informing that the map will be processed. Just before the 200 OK response, MapProcessor service is called and, at there, maps are processed within an ExecutorService. By default, I kept the executor service containing only one thread
+It contains REST endpoints that receives map inputs from an user and retrieves shortest path between two points (for more info, please check REST Api doc).
 
-Since it is a graph problem, it runs an Embedded Graph Database (Neo4J) in version 1.8.1 with Spring Data Neo4J (SDN) plugin, which offers Transactional, repository, etc. It may be not the best way to obtain quick responses from database, but I believe that the abstraction offered by the plugin is  worth when thinking about maintenance and scalability. However, latest version of Neo4J with SDN plugin presented performance issues when importing a map when compared to the chosen version, and that's the reason why I decided to keep using Neo4J 1.8.1.
+After the input map request is received, a file is saved containing a map and an Executor runs a thread to insert the map into the database. Route insertion was splitted into many transactions
+since the performance of only one transaction for a resonable number of routes (500.000) was not good. The REST response is assynchronous (but there is not method to 
+check if the map was already parsed or not).
 
-As mentioned previously, Neo4J offers support to Dijkstra algorithm and also for Cypher queries, which can enable much more performance than a relational database. Even though Cypher is not used in this project, it is a powerful tool to administrate a graph database.
-
-While processing the map, the file is read and MapPoints objects and Route objects are created. MapPoints are firstly added to the database (during the develipment I created a simple cache to avoid duplications in this step and gained 40% of performance) and then Route, which are the relationship entities are added.
-
-Just after that, the map is commited to database and the search engine will recognize the recently added structures.
-
-What is missing
-==============
-- Error handling for some cases were not implemented
-- I could not implement and test a Batch importer for the Map files, but this is an alternative to gain performance in map creation.
-- There is no mechanism for the user to identify if a map is already processed or if it is processing.
+Along this input process, database operations are performed using Spring Data Neo4j repositories, being the Nodes inserted prior to the Path between them, to increase performance (not repeat point insertion).
+I used Neo4J 1.8 with Spring Data Neo4J 2.0 since I obtained a better performance in map insertion.
 
 
+The search for the shortest path is made over a Dijkstra algorithm implementation existant in Neo4J. The algorithm performs well in a environment of 10000 nodes with 500k relationships (less than 3 seconds). Neo 4J
+also caches the results after the first search is made, which improves performance of later searches.
+
+Assumptions for performance
+=============
+
+My tests were based on maps containing up to 10000 nodes, with 500.000 relationship between them.
+
+The tests were made on a 8gb ram I7 machine and in a I5 notebook containing 4gb of memory.
+
+Installation
+=============
+
+Requirements
+
+- Java 7 installed
+- Apache Tomcat
+- Maven installed
 
 
+To run the system, follow the procedures below:
+
+- Clone the repository
+- With maven installed and added to PATH, run "mvn package" in the root folder of DeliveryRouteWalmart.
+- Add the following line to your server.xml file of tomcat:
+
+<Context docBase="DeliveryRouteWalmart" path="/DeliveryRouteWalmart" reloadable="true"/>
+
+- After the .war package is created, rename it to DeliveryRouteWalmart.war and copy it into the webapps folder of your tomcat installation.
+- run startup.bat located inside /bin folder of your tomcat installation
+
+
+What could be improved
+=============
+
+Some error handling code was not implemented and also Neo4J batch importer may improve performance of map inputs.

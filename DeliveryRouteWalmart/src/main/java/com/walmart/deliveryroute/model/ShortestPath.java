@@ -72,10 +72,8 @@ public class ShortestPath {
 		this.distance = distance;
 	}
 
-	public double calculateTotalCost(float autonomy, float cost) {
-		double costPerKilometer = cost / autonomy;
-		totalCost = distance * costPerKilometer;
-		return totalCost;
+	public void setTotalCost(double totalCost) {
+		this.totalCost = totalCost;
 	}
 	
 	public double getTotalCost() {

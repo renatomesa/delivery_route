@@ -17,6 +17,7 @@ import com.walmart.deliveryroute.services.IMapManagerService;
 import com.walmart.deliveryroute.services.IMapOperationsService;
 import com.walmart.deliveryroute.services.impl.GraphOperationsServiceImpl;
 import com.walmart.deliveryroute.services.impl.MapManagerServiceImpl;
+import com.walmart.deliveryroute.services.impl.MapProcessor;
 
 /**
  * Configuration class for Spring
@@ -47,6 +48,11 @@ public class ApplicationConfiguration{
 	@Bean(name="MapPointDAOBean")
 	public IMapPointDAO getMapPointDao(){
 		return new MapPointDAOImpl();
+	}
+	
+	@Bean(name="TestTransactionalBean")
+	public MapProcessor testTransactional() {
+		return new MapProcessor();
 	}
 
 }

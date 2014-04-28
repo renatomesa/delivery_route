@@ -4,7 +4,6 @@
 package com.walmart.deliveryroute.dao;
 
 import com.walmart.deliveryroute.model.MapPoint;
-import com.walmart.deliveryroute.model.Route;
 
 /**
  * Defines an API for {@link MapPoint} database access object

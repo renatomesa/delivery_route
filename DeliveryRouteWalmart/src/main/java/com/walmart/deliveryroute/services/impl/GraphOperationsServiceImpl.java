@@ -15,8 +15,6 @@ import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.PathExpander;
 import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.RelationshipExpander;
-import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.kernel.Traversal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
@@ -31,9 +29,10 @@ import com.walmart.deliveryroute.services.IMapOperationsService;
  * @author renatomesa@gmail.com (Renato Vicari Mesa)
  *
  */
-public class GraphOperationsServiceImpl implements IMapOperationsService {
 
-    private final PathExpander expander;
+@SuppressWarnings("rawtypes")
+public class GraphOperationsServiceImpl implements IMapOperationsService {
+	private final PathExpander expander;
     private final CostEvaluator<Double> costEvaluator;
     private final PathFinder<WeightedPath> dijkstraPathFinder;
 
@@ -59,6 +58,10 @@ public class GraphOperationsServiceImpl implements IMapOperationsService {
 
         List<MapPoint> points = new LinkedList<MapPoint>();
         List<Route> routes = new LinkedList<Route>();
+        
+        if(path == null || points == null || routes == null) {
+        	return null;
+        }
         
         Iterable<Node> nodes = path.nodes();
         Iterable<Relationship> relationships = path.relationships();

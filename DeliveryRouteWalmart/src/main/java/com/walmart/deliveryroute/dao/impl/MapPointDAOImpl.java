@@ -8,7 +8,6 @@ import org.springframework.data.neo4j.support.Neo4jTemplate;
 
 import com.walmart.deliveryroute.dao.IMapPointDAO;
 import com.walmart.deliveryroute.model.MapPoint;
-import com.walmart.deliveryroute.model.Route;
 import com.walmart.deliveryroute.repository.MapPointRepository;
 
 /**

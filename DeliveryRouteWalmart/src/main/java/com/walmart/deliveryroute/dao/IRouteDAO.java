@@ -3,9 +3,6 @@
  */
 package com.walmart.deliveryroute.dao;
 
-import java.util.List;
-import java.util.Map;
-
 import com.walmart.deliveryroute.model.MapPoint;
 import com.walmart.deliveryroute.model.Route;
 

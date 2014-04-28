@@ -3,13 +3,10 @@
  */
 package com.walmart.deliveryroute.test;
 
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
-import org.springframework.data.neo4j.support.Neo4jTemplate;
 
 import com.walmart.deliveryroute.dao.IMapPointDAO;
 import com.walmart.deliveryroute.dao.IRouteDAO;
@@ -19,6 +16,8 @@ import com.walmart.deliveryroute.services.IMapManagerService;
 import com.walmart.deliveryroute.services.IMapOperationsService;
 import com.walmart.deliveryroute.services.impl.GraphOperationsServiceImpl;
 import com.walmart.deliveryroute.services.impl.MapManagerServiceImpl;
+import com.walmart.deliveryroute.services.impl.MapProcessor;
+import com.walmart.deliveryroute.web.MapResource;
 
 /**
  * @author renatomesa@gmail.com (Renato Vicari Mesa)
@@ -47,6 +46,16 @@ public class ApplicationContext {
 	@Bean(name="MapInterpreterServiceBean")
 	public IMapManagerService createMapInterpreterService() {
 		return new MapManagerServiceImpl();
+	}
+	
+	@Bean(name="MapResourceBean")
+	public MapResource createMapResource() {
+		return new MapResource();
+	}
+	
+	@Bean(name="TestTransactionalBean")
+	public MapProcessor testTransactional() {
+		return new MapProcessor();
 	}
 	
 }

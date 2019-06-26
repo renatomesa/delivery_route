@@ -65,6 +65,6 @@ public class MapPointDAOImpl implements IMapPointDAO {
 	 */
 	@Override
 	public MapPoint findMapPointByProperty(String property, Object value) {
-		return mapPointRepository.findByPropertyValue(property, value);
+		return mapPointRepository.findBySchemaPropertyValue(property, value);
 	}	
 }

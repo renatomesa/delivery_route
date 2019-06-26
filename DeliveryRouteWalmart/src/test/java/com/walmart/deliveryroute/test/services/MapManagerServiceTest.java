@@ -9,6 +9,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.ws.rs.core.Response;
+
 import junit.framework.TestCase;
 
 import org.junit.Before;
@@ -102,7 +104,7 @@ public class MapManagerServiceTest extends TestCase {
 	@Test
 	public void testMapInsertionWebResource() throws IOException {
 		String fileData = loadMapFromFile("./src/test/resources/maps/map-10nodes.txt");
-		//MapInsertionResponse response = mapResource.inputMap("testMap", fileData);
+		Response response = mapResource.inputMap("testMap", fileData);
 		//assertEquals(response.isStatus(),true);
 	}
 	

@@ -24,7 +24,7 @@ import com.walmart.deliveryroute.web.MapResource;
  *
  */
 @Configuration
-@EnableNeo4jRepositories
+@EnableNeo4jRepositories(basePackages= {"com.walmart.deliveryroute.repository"})
 @ImportResource("classpath:spring/application-context-tests.xml")
 public class ApplicationContext {
 	

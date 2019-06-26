@@ -3,10 +3,11 @@
  */
 package com.walmart.deliveryroute.model;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.NodeEntity;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * POJO which represents a single Node, which can be used as an origin or destination

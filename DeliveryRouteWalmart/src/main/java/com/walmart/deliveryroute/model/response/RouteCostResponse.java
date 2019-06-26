@@ -5,8 +5,7 @@ package com.walmart.deliveryroute.model.response;
 
 import java.util.List;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.walmart.deliveryroute.model.MapPoint;
 
 /**

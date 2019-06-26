@@ -65,6 +65,9 @@ public class GraphOperationsServiceTest extends TestCase {
 	
 	@Test
 	public void testShortestPathSearch() {
+	    
+	    
+	    
 		ShortestPath shortestPath = managerService.getShortestPath("A", "D", 10, 2.5f);
 		
 		double cost = FuelCostCalculator.calculateCost(shortestPath.getDistance(),10, 2.5f);

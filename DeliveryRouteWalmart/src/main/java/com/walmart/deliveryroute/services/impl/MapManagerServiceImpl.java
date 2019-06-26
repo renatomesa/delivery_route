@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -134,6 +132,7 @@ public class MapManagerServiceImpl implements IMapManagerService {
 	 * @see com.walmart.deliveryroute.services.IMapInterpreterService#getShortestPath(java.lang.String, java.lang.String, float, float)
 	 */
 	@Override
+	@Transactional
 	public ShortestPath getShortestPath(String origin, String destination,
 			float autonomy, float fuelCost) {
 		
